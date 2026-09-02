@@ -25,9 +25,14 @@ public class LoginServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) 
             throws ServletException, IOException {
-        // If already logged in, redirect to dashboard
+        // If already logged in, redirect based on role
         if (SessionManager.isLoggedIn(request)) {
-            response.sendRedirect(request.getContextPath() + "/dashboard");
+            String role = SessionManager.getRole(request);
+            if ("admin".equals(role)) {
+                response.sendRedirect(request.getContextPath() + "/admin/dashboard");
+            } else {
+                response.sendRedirect(request.getContextPath() + "/dashboard");
+            }
             return;
         }
         request.getRequestDispatcher("/jsp/login.jsp").forward(request, response);
@@ -48,15 +53,26 @@ public class LoginServlet extends HttpServlet {
         }
         
         // Authenticate user
-        boolean authenticated = authService.authenticate(username, password);
+        User user = authService.authenticateUser(username, password);
         
-        if (authenticated) {
-            User user = authService.getUserDetails(username);
+        if (user != null) {
+            // Check if user is active
+            if (!user.isActive()) {
+                request.setAttribute("error", "Your account has been deactivated. Please contact admin.");
+                request.getRequestDispatcher("/jsp/login.jsp").forward(request, response);
+                return;
+            }
             
             // Create session and cookie
-            SessionManager.createSession(request, response, username, user.getFullName(), user.getRole());
+            SessionManager.createSession(request, response, username, user.getFullName(), 
+                                         user.getRole(), user.getUserId(), user.isActive());
             
-            response.sendRedirect(request.getContextPath() + "/dashboard");
+            // Redirect based on role
+            if ("admin".equals(user.getRole())) {
+                response.sendRedirect(request.getContextPath() + "/admin/dashboard");
+            } else {
+                response.sendRedirect(request.getContextPath() + "/dashboard");
+            }
         } else {
             request.setAttribute("error", "Invalid username or password. Please try again.");
             request.getRequestDispatcher("/jsp/login.jsp").forward(request, response);

@@ -7,17 +7,19 @@ public class User {
     private String fullName;
     private String email;
     private String role;
+    private boolean isActive;
     private String createdAt;
 
     // Constructors
     public User() {}
 
-    public User(String username, String password, String fullName, String email, String role) {
+    public User(String username, String password, String fullName, String email, String role, boolean isActive) {
         this.username = username;
         this.password = password;
         this.fullName = fullName;
         this.email = email;
         this.role = role;
+        this.isActive = isActive;
     }
 
     // Getters and Setters
@@ -38,6 +40,9 @@ public class User {
     
     public String getRole() { return role; }
     public void setRole(String role) { this.role = role; }
+    
+    public boolean isActive() { return isActive; }
+    public void setActive(boolean active) { isActive = active; }
     
     public String getCreatedAt() { return createdAt; }
     public void setCreatedAt(String createdAt) { this.createdAt = createdAt; }

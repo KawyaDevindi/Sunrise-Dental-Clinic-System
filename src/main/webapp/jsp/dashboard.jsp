@@ -5,6 +5,11 @@
         response.sendRedirect(request.getContextPath() + "/login");
         return;
     }
+    String role = (String) session.getAttribute("role");
+    if ("admin".equals(role)) {
+        response.sendRedirect(request.getContextPath() + "/admin/dashboard");
+        return;
+    }
 %>
 <!DOCTYPE html>
 <html>
@@ -42,6 +47,14 @@
             color: #34495e;
             font-weight: 600;
         }
+        .dashboard-header .user-info .staff-badge {
+            background: #3498db;
+            color: white;
+            padding: 3px 12px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: bold;
+        }
         .dashboard-header .btn-logout {
             background: #e74c3c;
             color: white;
@@ -74,7 +87,7 @@
         .menu-card:hover {
             transform: translateY(-8px);
             box-shadow: 0 12px 35px rgba(0,0,0,0.15);
-            border-color: #667eea;
+            border-color: #3498db;
         }
         .menu-card .icon {
             font-size: 48px;
@@ -91,7 +104,7 @@
             margin-top: 5px;
         }
         .welcome-section {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
             color: white;
             padding: 30px;
             border-radius: 12px;
@@ -125,6 +138,7 @@
             <h1>🦷 Sunrise Dental Clinic</h1>
             <div class="user-info">
                 <span>👋 Welcome, <strong><%= session.getAttribute("fullName") %></strong></span>
+                <span class="staff-badge">👤 Staff</span>
                 <a href="${pageContext.request.contextPath}/logout" class="btn-logout">🚪 Logout</a>
             </div>
         </div>

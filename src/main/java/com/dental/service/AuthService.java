@@ -12,7 +12,11 @@ public class AuthService {
     
     public boolean authenticate(String username, String password) {
         User user = userDAO.validateUser(username, password);
-        return user != null;
+        return user != null && user.isActive();
+    }
+    
+    public User authenticateUser(String username, String password) {
+        return userDAO.validateUser(username, password);
     }
     
     public User getUserDetails(String username) {
