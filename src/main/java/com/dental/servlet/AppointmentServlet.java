@@ -39,14 +39,22 @@ public class AppointmentServlet extends HttpServlet {
         }
         
         String action = request.getParameter("action");
+        System.out.println("🔍 AppointmentServlet - Action: " + action);
         
         if ("search".equals(action)) {
             String appNo = request.getParameter("appointmentNo");
+            System.out.println("🔍 AppointmentServlet - Searching for: " + appNo);
+            
             if (appNo != null && !appNo.trim().isEmpty()) {
-                Appointment app = appointmentService.getAppointmentDetails(appNo.trim());
-                request.setAttribute("appointment", app);
-                if (app == null) {
-                    request.setAttribute("error", "Appointment not found with number: " + appNo);
+                String cleanAppNo = appNo.trim();
+                Appointment app = appointmentService.getAppointmentDetails(cleanAppNo);
+                
+                if (app != null) {
+                    request.setAttribute("appointment", app);
+                    System.out.println("✅ AppointmentServlet - Found: " + cleanAppNo);
+                } else {
+                    request.setAttribute("error", "Appointment not found with number: " + cleanAppNo);
+                    System.err.println("❌ AppointmentServlet - Not found: " + cleanAppNo);
                 }
             } else {
                 request.setAttribute("error", "Please enter an appointment number.");
@@ -149,8 +157,10 @@ public class AppointmentServlet extends HttpServlet {
             if (success) {
                 request.setAttribute("success", "Appointment registered successfully!");
                 request.setAttribute("appointment", appointment);
+                System.out.println("✅ Appointment registered: " + appointment.getAppointmentNo());
             } else {
                 request.setAttribute("error", "Failed to register appointment. Please try again.");
+                System.err.println("❌ Failed to register appointment");
             }
             
             loadFormData(request);

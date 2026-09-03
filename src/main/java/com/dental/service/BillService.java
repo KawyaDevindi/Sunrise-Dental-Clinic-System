@@ -13,13 +13,21 @@ public class BillService {
     
     public Bill generateBill(String appointmentNo) {
         if (appointmentNo == null || appointmentNo.trim().isEmpty()) {
+            System.err.println("❌ BillService: Appointment number is null or empty");
             return null;
         }
-        return billDAO.generateBill(appointmentNo);
+        
+        String cleanAppNo = appointmentNo.trim();
+        System.out.println("🔍 BillService - Generating bill for: " + cleanAppNo);
+        
+        return billDAO.generateBill(cleanAppNo);
     }
     
     public Bill getBillByAppointmentNo(String appointmentNo) {
-        return billDAO.getBillByAppointmentNo(appointmentNo);
+        if (appointmentNo == null || appointmentNo.trim().isEmpty()) {
+            return null;
+        }
+        return billDAO.getBillByAppointmentNo(appointmentNo.trim());
     }
     
     public List<Bill> getAllBills() {

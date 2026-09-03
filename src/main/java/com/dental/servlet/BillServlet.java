@@ -37,25 +37,35 @@ public class BillServlet extends HttpServlet {
         }
         
         String action = request.getParameter("action");
+        System.out.println("🔍 BillServlet - Action: " + action);
         
         if ("generate".equals(action)) {
             String appNo = request.getParameter("appointmentNo");
+            System.out.println("🔍 BillServlet - Generating bill for: " + appNo);
+            
             if (appNo != null && !appNo.trim().isEmpty()) {
+                String cleanAppNo = appNo.trim();
+                
                 // Check if appointment exists
-                Appointment app = appointmentService.getAppointmentDetails(appNo.trim());
+                Appointment app = appointmentService.getAppointmentDetails(cleanAppNo);
                 if (app == null) {
-                    request.setAttribute("error", "Appointment not found!");
+                    System.err.println("❌ BillServlet - Appointment not found: " + cleanAppNo);
+                    request.setAttribute("error", "Appointment not found with number: " + cleanAppNo);
                     request.getRequestDispatcher("/jsp/generateBill.jsp").forward(request, response);
                     return;
                 }
                 
+                System.out.println("✅ BillServlet - Found appointment: " + cleanAppNo);
+                
                 // Generate bill
-                Bill bill = billService.generateBill(appNo.trim());
+                Bill bill = billService.generateBill(cleanAppNo);
                 if (bill != null) {
                     request.setAttribute("bill", bill);
                     request.setAttribute("success", "Bill generated successfully!");
+                    System.out.println("✅ BillServlet - Bill generated for: " + cleanAppNo);
                 } else {
                     request.setAttribute("error", "Failed to generate bill. Please check if bill already exists.");
+                    System.err.println("❌ BillServlet - Failed to generate bill for: " + cleanAppNo);
                 }
             } else {
                 request.setAttribute("error", "Please enter an appointment number.");
