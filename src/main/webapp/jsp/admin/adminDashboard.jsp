@@ -63,6 +63,9 @@
             text-decoration: none;
             font-weight: 600;
             transition: background 0.3s;
+            cursor: pointer;
+            border: none;
+            font-size: 14px;
         }
         .dashboard-header .btn-logout:hover {
             background: #c0392b;
@@ -130,6 +133,14 @@
             }
         }
     </style>
+    <script>
+        function confirmLogout() {
+            if (confirm('Are you sure you want to logout?')) {
+                window.location.href = '${pageContext.request.contextPath}/logout';
+            }
+            return false;
+        }
+    </script>
 </head>
 <body>
     <div class="dashboard-wrapper">
@@ -139,7 +150,7 @@
             <div class="user-info">
                 <span>👋 Welcome, <strong><%= session.getAttribute("fullName") %></strong></span>
                 <span class="admin-badge">🔐 Admin</span>
-                <a href="${pageContext.request.contextPath}/logout" class="btn-logout">🚪 Logout</a>
+                <button onclick="confirmLogout()" class="btn-logout">🚪 Logout</button>
             </div>
         </div>
         

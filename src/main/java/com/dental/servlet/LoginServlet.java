@@ -35,6 +35,13 @@ public class LoginServlet extends HttpServlet {
             }
             return;
         }
+        
+        // Check if logout was successful
+        String logoutParam = request.getParameter("logout");
+        if ("success".equals(logoutParam)) {
+            request.setAttribute("message", "You have been logged out successfully.");
+        }
+        
         request.getRequestDispatcher("/jsp/login.jsp").forward(request, response);
     }
     

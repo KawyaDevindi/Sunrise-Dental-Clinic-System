@@ -98,6 +98,15 @@
             text-align: center;
             border-left: 4px solid #c0392b;
         }
+        .success-message {
+            background: #d5f5e3;
+            color: #27ae60;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            text-align: center;
+            border-left: 4px solid #27ae60;
+        }
         .footer {
             text-align: center;
             margin-top: 20px;
@@ -115,6 +124,10 @@
             
             <% if (request.getAttribute("error") != null) { %>
                 <div class="error-message">⚠️ <%= request.getAttribute("error") %></div>
+            <% } %>
+            
+            <% if (request.getAttribute("message") != null) { %>
+                <div class="success-message">✅ <%= request.getAttribute("message") %></div>
             <% } %>
             
             <form action="${pageContext.request.contextPath}/login" method="post" autocomplete="off">

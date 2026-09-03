@@ -197,3 +197,106 @@ body {
         grid-template-columns: 1fr !important;
     }
 }
+
+/* ============================================
+   LOGOUT CONFIRMATION MODAL
+   ============================================ */
+.logout-modal-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.6);
+    z-index: 9999;
+    justify-content: center;
+    align-items: center;
+    animation: fadeIn 0.3s ease;
+}
+
+.logout-modal-overlay.active {
+    display: flex;
+}
+
+.logout-modal {
+    background: white;
+    padding: 35px 40px;
+    border-radius: 15px;
+    max-width: 420px;
+    width: 90%;
+    text-align: center;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    animation: slideDown 0.3s ease;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.logout-modal .icon {
+    font-size: 56px;
+    margin-bottom: 10px;
+}
+
+.logout-modal h3 {
+    color: #2c3e50;
+    font-size: 22px;
+    margin-bottom: 8px;
+}
+
+.logout-modal p {
+    color: #7f8c8d;
+    font-size: 14px;
+    margin-bottom: 25px;
+}
+
+.logout-modal .modal-actions {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+}
+
+.logout-modal .btn-confirm {
+    background: #e74c3c;
+    color: white;
+    padding: 10px 30px;
+    border: none;
+    border-radius: 8px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background 0.3s;
+    font-size: 14px;
+}
+
+.logout-modal .btn-confirm:hover {
+    background: #c0392b;
+}
+
+.logout-modal .btn-cancel {
+    background: #95a5a6;
+    color: white;
+    padding: 10px 30px;
+    border: none;
+    border-radius: 8px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background 0.3s;
+    font-size: 14px;
+}
+
+.logout-modal .btn-cancel:hover {
+    background: #7f8c8d;
+}

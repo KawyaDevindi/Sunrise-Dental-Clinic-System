@@ -17,7 +17,16 @@ public class LogoutServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response) 
             throws ServletException, IOException {
         
+        // Get username before invalidating session for logging
+        String username = SessionManager.getUsername(request);
+        
+        // Invalidate session
         SessionManager.invalidateSession(request);
-        response.sendRedirect(request.getContextPath() + "/login");
+        
+        // Log the logout
+        System.out.println("🔐 User logged out: " + username);
+        
+        // Redirect to login page with success message
+        response.sendRedirect(request.getContextPath() + "/login?logout=success");
     }
 }
