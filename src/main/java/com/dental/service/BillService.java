@@ -20,7 +20,24 @@ public class BillService {
         String cleanAppNo = appointmentNo.trim();
         System.out.println("🔍 BillService - Generating bill for: " + cleanAppNo);
         
-        return billDAO.generateBill(cleanAppNo);
+        // Try stored procedure first
+        Bill bill = billDAO.generateBill(cleanAppNo);
+        
+        // If stored procedure fails, try direct SQL
+        if (bill == null) {
+            System.out.println("🔄 BillService - Stored procedure failed, trying direct SQL...");
+            bill = billDAO.generateBillDirectSQL(cleanAppNo);
+        }
+        
+        if (bill == null) {
+            System.err.println("❌ BillService - Failed to generate bill for: " + cleanAppNo);
+        } else {
+            System.out.println("✅ BillService - Bill generated: " + cleanAppNo);
+            System.out.println("   Bill ID: " + bill.getBillId());
+            System.out.println("   Total: " + bill.getTotalAmount());
+        }
+        
+        return bill;
     }
     
     public Bill getBillByAppointmentNo(String appointmentNo) {

@@ -25,6 +25,7 @@ public class BillServlet extends HttpServlet {
         super.init();
         billService = new BillService();
         appointmentService = new AppointmentService();
+        System.out.println("✅ BillServlet initialized");
     }
     
     @Override
@@ -47,7 +48,9 @@ public class BillServlet extends HttpServlet {
                 String cleanAppNo = appNo.trim();
                 
                 // Check if appointment exists
+                System.out.println("🔍 BillServlet - Checking if appointment exists: " + cleanAppNo);
                 Appointment app = appointmentService.getAppointmentDetails(cleanAppNo);
+                
                 if (app == null) {
                     System.err.println("❌ BillServlet - Appointment not found: " + cleanAppNo);
                     request.setAttribute("error", "Appointment not found with number: " + cleanAppNo);
@@ -56,16 +59,33 @@ public class BillServlet extends HttpServlet {
                 }
                 
                 System.out.println("✅ BillServlet - Found appointment: " + cleanAppNo);
+                System.out.println("   Patient: " + app.getPatientName());
+                System.out.println("   Status: " + app.getStatus());
+                
+                // Check if bill already exists
+                Bill existingBill = billService.getBillByAppointmentNo(cleanAppNo);
+                if (existingBill != null) {
+                    System.out.println("📊 BillServlet - Bill already exists for: " + cleanAppNo);
+                    request.setAttribute("bill", existingBill);
+                    request.setAttribute("success", "Bill already exists!");
+                    request.getRequestDispatcher("/jsp/generateBill.jsp").forward(request, response);
+                    return;
+                }
                 
                 // Generate bill
+                System.out.println("🔄 BillServlet - Calling billService.generateBill for: " + cleanAppNo);
                 Bill bill = billService.generateBill(cleanAppNo);
+                
                 if (bill != null) {
+                    System.out.println("✅ BillServlet - Bill generated successfully for: " + cleanAppNo);
+                    System.out.println("   Bill ID: " + bill.getBillId());
+                    System.out.println("   Total: " + bill.getTotalAmount());
+                    
                     request.setAttribute("bill", bill);
                     request.setAttribute("success", "Bill generated successfully!");
-                    System.out.println("✅ BillServlet - Bill generated for: " + cleanAppNo);
                 } else {
-                    request.setAttribute("error", "Failed to generate bill. Please check if bill already exists.");
                     System.err.println("❌ BillServlet - Failed to generate bill for: " + cleanAppNo);
+                    request.setAttribute("error", "Failed to generate bill. Please try again.");
                 }
             } else {
                 request.setAttribute("error", "Please enter an appointment number.");
