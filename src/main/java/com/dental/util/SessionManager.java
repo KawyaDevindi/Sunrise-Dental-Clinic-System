@@ -16,7 +16,13 @@ public class SessionManager {
     
     public static void createSession(HttpServletRequest request, HttpServletResponse response, 
                                      String username, String fullName, String role, int userId, boolean isActive) {
-        HttpSession session = request.getSession();
+        // Invalidate any existing session first
+        HttpSession oldSession = request.getSession(false);
+        if (oldSession != null) {
+            oldSession.invalidate();
+        }
+        
+        HttpSession session = request.getSession(true);
         session.setAttribute(SESSION_USERNAME, username);
         session.setAttribute(SESSION_FULLNAME, fullName);
         session.setAttribute(SESSION_ROLE, role);
@@ -29,11 +35,17 @@ public class SessionManager {
         userCookie.setMaxAge(24 * 60 * 60); // 1 day
         userCookie.setPath("/");
         response.addCookie(userCookie);
+        
+        System.out.println("✅ Session created for: " + username + " (Role: " + role + ")");
     }
     
     public static boolean isLoggedIn(HttpServletRequest request) {
         HttpSession session = request.getSession(false);
-        return session != null && session.getAttribute(SESSION_USERNAME) != null;
+        boolean loggedIn = session != null && session.getAttribute(SESSION_USERNAME) != null;
+        if (loggedIn) {
+            System.out.println("🔍 User is logged in: " + session.getAttribute(SESSION_USERNAME));
+        }
+        return loggedIn;
     }
     
     public static String getUsername(HttpServletRequest request) {
@@ -66,7 +78,11 @@ public class SessionManager {
     public static void invalidateSession(HttpServletRequest request) {
         HttpSession session = request.getSession(false);
         if (session != null) {
+            String username = (String) session.getAttribute(SESSION_USERNAME);
             session.invalidate();
+            System.out.println("✅ Session invalidated for: " + username);
+        } else {
+            System.out.println("⚠️ No session to invalidate");
         }
     }
     

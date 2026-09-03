@@ -21,9 +21,13 @@ public class AuthFilter implements Filter {
     // Public pages that don't require authentication
     private static final Set<String> PUBLIC_PAGES = new HashSet<>(Arrays.asList(
         "/login",
+        "/logout",
         "/css/",
         "/js/",
-        "/images/"
+        "/images/",
+        "/jsp/login.jsp",
+        "/jsp/accessDenied.jsp",
+        "/jsp/error.jsp"
     ));
     
     // Admin-only pages
@@ -49,21 +53,25 @@ public class AuthFilter implements Filter {
         HttpServletResponse res = (HttpServletResponse) response;
         
         String path = req.getRequestURI().substring(req.getContextPath().length());
+        System.out.println("🔍 AuthFilter - Path: " + path);
         
         // Allow public pages
         if (isPublicPath(path)) {
+            System.out.println("✅ Public path allowed: " + path);
             chain.doFilter(request, response);
             return;
         }
         
         // Check if user is logged in
         if (!SessionManager.isLoggedIn(req)) {
+            System.out.println("❌ Not logged in, redirecting to login from: " + path);
             res.sendRedirect(req.getContextPath() + "/login");
             return;
         }
         
         // Check if user is active
         if (!SessionManager.isUserActive(req)) {
+            System.out.println("❌ User inactive, invalidating session");
             SessionManager.invalidateSession(req);
             res.sendRedirect(req.getContextPath() + "/login?error=Account+is+deactivated");
             return;
@@ -71,13 +79,16 @@ public class AuthFilter implements Filter {
         
         // Check role-based access
         String role = SessionManager.getRole(req);
+        System.out.println("👤 User role: " + role + ", Path: " + path);
         
         if (isAdminPath(path) && !"admin".equals(role)) {
+            System.out.println("🚫 Access denied - Admin only: " + path);
             res.sendError(HttpServletResponse.SC_FORBIDDEN, "Access Denied: Admin only");
             return;
         }
         
         // Allow access
+        System.out.println("✅ Access granted for: " + path);
         chain.doFilter(request, response);
     }
     

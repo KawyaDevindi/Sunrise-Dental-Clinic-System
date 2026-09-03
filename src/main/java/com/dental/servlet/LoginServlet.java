@@ -20,14 +20,21 @@ public class LoginServlet extends HttpServlet {
     public void init() throws ServletException {
         super.init();
         authService = new AuthService();
+        System.out.println("✅ LoginServlet initialized");
     }
     
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) 
             throws ServletException, IOException {
-        // If already logged in, redirect based on role
+        
+        System.out.println("🔍 LoginServlet - GET request");
+        
+        // Check if already logged in
         if (SessionManager.isLoggedIn(request)) {
             String role = SessionManager.getRole(request);
+            System.out.println("👤 Already logged in as: " + SessionManager.getUsername(request) + ", Role: " + role);
+            
+            // Redirect based on role
             if ("admin".equals(role)) {
                 response.sendRedirect(request.getContextPath() + "/admin/dashboard");
             } else {
@@ -36,12 +43,14 @@ public class LoginServlet extends HttpServlet {
             return;
         }
         
-        // Check if logout was successful
+        // Check for logout success message
         String logoutParam = request.getParameter("logout");
         if ("success".equals(logoutParam)) {
             request.setAttribute("message", "You have been logged out successfully.");
+            System.out.println("✅ Logout success message shown");
         }
         
+        // Forward to login page
         request.getRequestDispatcher("/jsp/login.jsp").forward(request, response);
     }
     
@@ -49,11 +58,14 @@ public class LoginServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response) 
             throws ServletException, IOException {
         
+        System.out.println("🔍 LoginServlet - POST request");
+        
         String username = request.getParameter("username");
         String password = request.getParameter("password");
         
         // Validate input
         if (username == null || username.trim().isEmpty() || password == null || password.trim().isEmpty()) {
+            System.out.println("❌ Login failed - Empty username or password");
             request.setAttribute("error", "Please enter both username and password.");
             request.getRequestDispatcher("/jsp/login.jsp").forward(request, response);
             return;
@@ -65,6 +77,7 @@ public class LoginServlet extends HttpServlet {
         if (user != null) {
             // Check if user is active
             if (!user.isActive()) {
+                System.out.println("❌ Login failed - Account deactivated: " + username);
                 request.setAttribute("error", "Your account has been deactivated. Please contact admin.");
                 request.getRequestDispatcher("/jsp/login.jsp").forward(request, response);
                 return;
@@ -74,6 +87,8 @@ public class LoginServlet extends HttpServlet {
             SessionManager.createSession(request, response, username, user.getFullName(), 
                                          user.getRole(), user.getUserId(), user.isActive());
             
+            System.out.println("✅ Login successful - User: " + username + ", Role: " + user.getRole());
+            
             // Redirect based on role
             if ("admin".equals(user.getRole())) {
                 response.sendRedirect(request.getContextPath() + "/admin/dashboard");
@@ -81,6 +96,7 @@ public class LoginServlet extends HttpServlet {
                 response.sendRedirect(request.getContextPath() + "/dashboard");
             }
         } else {
+            System.out.println("❌ Login failed - Invalid credentials for: " + username);
             request.setAttribute("error", "Invalid username or password. Please try again.");
             request.getRequestDispatcher("/jsp/login.jsp").forward(request, response);
         }

@@ -16,13 +16,24 @@ public class AdminDashboardServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response) 
             throws ServletException, IOException {
         
-        // Check if user is logged in and is admin
-        if (!SessionManager.isLoggedIn(request) || !SessionManager.isAdmin(request)) {
+        System.out.println("🔍 AdminDashboardServlet - GET request");
+        
+        // Check if user is logged in
+        if (!SessionManager.isLoggedIn(request)) {
+            System.out.println("❌ AdminDashboardServlet - Not logged in, redirecting to login");
             response.sendRedirect(request.getContextPath() + "/login");
             return;
         }
         
+        // Check if user is admin
+        if (!SessionManager.isAdmin(request)) {
+            System.out.println("❌ AdminDashboardServlet - Not admin, redirecting to staff dashboard");
+            response.sendRedirect(request.getContextPath() + "/dashboard");
+            return;
+        }
+        
         // Forward to admin dashboard JSP
+        System.out.println("✅ AdminDashboardServlet - Forwarding to adminDashboard.jsp");
         request.getRequestDispatcher("/jsp/admin/adminDashboard.jsp").forward(request, response);
     }
 }
